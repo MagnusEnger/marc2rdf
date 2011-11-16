@@ -3,7 +3,7 @@ tag:
   "001": 
     predicate: http://www.w3.org/1999/02/22-rdf-syntax-ns#type
     object:
-      regex: \d{1,}
+      regex: !ruby/regexp /[^\d]/
       prefix: http://rdf.deichman.no/resource/
       datatype: uri
     relation: 
