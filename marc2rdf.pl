@@ -23,7 +23,8 @@ my $storage = new RDF::Redland::Storage("hashes", "test", "new='yes',hash-type='
 die "Failed to create RDF::Redland::Storage\n" unless $storage;
 my $model = new RDF::Redland::Model($storage, "");
 die "Failed to create RDF::Redland::Model for storage\n" unless $model;
-my $serializer = new RDF::Redland::Serializer("ntriples");
+# Possible formats: rdfxml, ntriples, turtle (more?)
+my $serializer = new RDF::Redland::Serializer($ARGV[0]);
 die "Failed to find serializer\n" if !$serializer;
 
 my $batch = MARC::File::USMARC->in($marc);
