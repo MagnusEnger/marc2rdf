@@ -16,6 +16,7 @@ use Data::Dumper;
 my $yaml = 'mini.yml';
 my $marc = 'koha.mrc';
 
+# Load the MARC to RDF mapping
 my $maptags = LoadFile($yaml);
 
 # Set up some Redland stuff
@@ -23,14 +24,15 @@ my $storage = new RDF::Redland::Storage("hashes", "test", "new='yes',hash-type='
 die "Failed to create RDF::Redland::Storage\n" unless $storage;
 my $model = new RDF::Redland::Model($storage, "");
 die "Failed to create RDF::Redland::Model for storage\n" unless $model;
-# Possible formats: rdfxml, ntriples, turtle (more?)
+# Possible formats for the serializer: rdfxml, ntriples, turtle (more?)
 my $serializer = new RDF::Redland::Serializer($ARGV[0]);
 die "Failed to find serializer\n" if !$serializer;
 
+# Get the MARC records
 my $batch = MARC::File::USMARC->in($marc);
 my $count = 0;
 
-# Iterate through our MARC records and do stuff
+# Iterate through our MARC records and convert them
 while (my $record = $batch->next()) {
 
   print "\n";
@@ -38,7 +40,8 @@ while (my $record = $batch->next()) {
   # Construct the subject URI
   # TODO Pull this from config
   my $s = new RDF::Redland::URINode('http://example.org' . '/collections/' . 'id_' . $record->subfield('999',"c"));
-
+  
+  # Iterate through all the fields in the record
   my @fields = $record->fields();
   foreach my $field (@fields) {
   
@@ -55,11 +58,13 @@ while (my $record = $batch->next()) {
         print "\tp: ", $p->as_string(), "\n";
         # Construct the object
         my $data = $field->data();
+        # TODO Refactor commonalities between this and the non-controlfields
+        # into a separate sub
         # Get data based on a regexp
         if ($maptags->{'tag'}->{$tag}->{'object'}->{'regex'}) {
           my $regex = $maptags->{'tag'}->{$tag}->{'object'}->{'regex'};
           # print "regex: $regex\n";
-          # $data =~ m/($regex)/i;
+          # FIXME $data =~ m/($regex)/i;
           $data = $1;
         }
         # Get data based on a substring
@@ -73,7 +78,7 @@ while (my $record = $batch->next()) {
         if ($data && $maptags->{'tag'}->{$tag}->{'object'}->{'prefix'}) {
           $data = $maptags->{'tag'}->{$tag}->{'object'}->{'prefix'} . $data;
         }
-        # Turn the data into a URI if it starts with "http"
+        # Turn the data into a URI if the datatype is uri
         if ($maptags->{'tag'}->{$tag}->{'object'}->{'datatype'} eq "uri") {
           $data = new RDF::Redland::URINode($data);
         }
@@ -87,9 +92,10 @@ while (my $record = $batch->next()) {
     
     } else {
       
-      # Map other fields
+      # Map fields that are noe controlfields
       # Get the subfields first
       my @subfields = $field->subfields();
+      # Iterate through the subfields
       foreach my $subfield (@subfields) {
         my $subfieldindicator = $subfield->[0];
         my $subfieldvalue     = $subfield->[1];
@@ -100,6 +106,8 @@ while (my $record = $batch->next()) {
           my $p = new RDF::Redland::URINode($maptags->{'tag'}->{$tag}->{'subfield'}->{$subfieldindicator}->{'predicate'});
           print "\t", $p->as_string(), "\n";
           # Construct the object
+          # TODO Get data based on a regexp
+          # TODO Get data based on a substring
           my $o = new RDF::Redland::Node($subfieldvalue);
           print "\t", $o->as_string(), "\n";
           # Construct the triple
@@ -118,5 +126,6 @@ while (my $record = $batch->next()) {
 
 print "$count records done\n\n";
 
+# Serialize the model into the format we set initially
 my $base_uri = new RDF::Redland::URINode("http://example.org/");
 print $serializer->serialize_model_to_string($base_uri, $model);
