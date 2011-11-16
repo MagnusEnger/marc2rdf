@@ -46,77 +46,33 @@ while (my $record = $batch->next()) {
   foreach my $field (@fields) {
   
     my $tag = $field->tag();
-    
+    if (!$maptags->{'tag'}->{$tag}){
+      # Skip this field if there is no mapping for it
+      next;
+    }
+    my $fieldmap = $maptags->{'tag'}->{$tag};
+
     if ($field->is_control_field()) {
       
-      # Map control fields
-      if ($maptags->{'tag'}->{$tag}) {
-        print "$tag\n";
-        print $maptags->{'tag'}->{$tag}->{'predicate'}, "\n";
-        # Construct the predicate URI
-        my $p = new RDF::Redland::URINode($maptags->{'tag'}->{$tag}->{'predicate'});
-        print "\tp: ", $p->as_string(), "\n";
-        # Construct the object
-        my $data = $field->data();
-        # TODO Refactor commonalities between this and the non-controlfields
-        # into a separate sub
-        # Get data based on a regexp
-        if ($maptags->{'tag'}->{$tag}->{'object'}->{'regex'}) {
-          my $regex = $maptags->{'tag'}->{$tag}->{'object'}->{'regex'};
-          # print "regex: $regex\n";
-          # FIXME $data =~ m/($regex)/i;
-          $data = $1;
-        }
-        # Get data based on a substring
-        if ($maptags->{'tag'}->{$tag}->{'object'}->{'substr_offset'} && $maptags->{'tag'}->{$tag}->{'object'}->{'substr_length'}) {
-          my $substr_offset = $maptags->{'tag'}->{$tag}->{'object'}->{'substr_offset'};
-          my $substr_length = $maptags->{'tag'}->{$tag}->{'object'}->{'substr_length'};
-          # print "substr: $substr_offset $substr_length\n";
-          $data = substr $data, $substr_offset, $substr_length;
-        }
-        # Prepend the prefix, if there is one
-        if ($data && $maptags->{'tag'}->{$tag}->{'object'}->{'prefix'}) {
-          $data = $maptags->{'tag'}->{$tag}->{'object'}->{'prefix'} . $data;
-        }
-        # Turn the data into a URI if the datatype is uri
-        if ($maptags->{'tag'}->{$tag}->{'object'}->{'datatype'} eq "uri") {
-          $data = new RDF::Redland::URINode($data);
-        }
-        my $o = new RDF::Redland::Node($data);
-        print "\to: ", $o->as_string(), "\n";
-        # Construct the triple
-        my $statement = new RDF::Redland::Statement($s, $p, $o);
-        $model->add_statement($statement);
-        $statement = undef;
-      }
-    
-    } else {
+      print $tag , " ", $fieldmap->{'predicate'}, "\n";
+      _create_triple($s, $field->data(), $fieldmap);
       
-      # Map fields that are noe controlfields
-      # Get the subfields first
+    } else {
+
       my @subfields = $field->subfields();
       # Iterate through the subfields
       foreach my $subfield (@subfields) {
         my $subfieldindicator = $subfield->[0];
         my $subfieldvalue     = $subfield->[1];
-        if ($maptags->{'tag'}->{$tag}->{'subfield'}->{$subfieldindicator}) {
-          print "$tag $subfieldindicator $subfieldvalue\n";
-          print $maptags->{'tag'}->{$tag}->{'subfield'}->{$subfieldindicator}->{'predicate'}, "\n";
-          # Construct the predicate URI
-          my $p = new RDF::Redland::URINode($maptags->{'tag'}->{$tag}->{'subfield'}->{$subfieldindicator}->{'predicate'});
-          print "\t", $p->as_string(), "\n";
-          # Construct the object
-          # TODO Get data based on a regexp
-          # TODO Get data based on a substring
-          my $o = new RDF::Redland::Node($subfieldvalue);
-          print "\t", $o->as_string(), "\n";
-          # Construct the triple
-          my $statement = new RDF::Redland::Statement($s, $p, $o);
-          $model->add_statement($statement);
-          $statement = undef;
+        if (!$fieldmap->{'subfield'}->{$subfieldindicator}) {
+          # Skip this subfield if there is no mapping for it
+          next;
         }
+        my $fieldmap = $fieldmap->{'subfield'}->{$subfieldindicator};
+        print $tag, " ", $subfieldindicator, " ", $fieldmap->{'predicate'}, "\n";
+        _create_triple($s, $subfieldvalue, $fieldmap);
       }
-    
+      
     }
   
   }
@@ -129,3 +85,45 @@ print "$count records done\n\n";
 # Serialize the model into the format we set initially
 my $base_uri = new RDF::Redland::URINode("http://example.org/");
 print $serializer->serialize_model_to_string($base_uri, $model);
+
+sub _create_triple {
+
+  my $s    = shift;
+  my $data = shift;
+  my $map  = shift;
+  
+  # Construct the predicate URI
+  my $p = new RDF::Redland::URINode($map->{'predicate'});
+  print "\tp: ", $p->as_string(), "\n";
+
+  # Construct the object
+  # Get data based on a regexp
+  if ($map->{'object'}->{'regex'}) {
+    my $regex = $map->{'object'}->{'regex'};
+    # print "regex: $regex\n";
+    # FIXME $data =~ m/($regex)/i;
+    $data = $data;
+  }
+  # Get data based on a substring
+  if ($map->{'object'}->{'substr_offset'} && $map->{'object'}->{'substr_length'}) {
+    my $substr_offset = $map->{'object'}->{'substr_offset'};
+    my $substr_length = $map->{'object'}->{'substr_length'};
+    # print "substr: $substr_offset $substr_length\n";
+    $data = substr $data, $substr_offset, $substr_length;
+  }
+  # Prepend the prefix, if there is one
+  if ($map->{'object'}->{'prefix'}) {
+    $data = $map->{'object'}->{'prefix'} . $data;
+  }
+  # Turn the data into a URI if the datatype is uri
+  if ($map->{'object'}->{'datatype'} eq "uri") {
+    $data = new RDF::Redland::URINode($data);
+  }
+  my $o = new RDF::Redland::Node($data);
+  print "\to: ", $o->as_string(), "\n";
+  # Construct the triple
+  my $statement = new RDF::Redland::Statement($s, $p, $o);
+  $model->add_statement($statement);
+  $statement = undef;
+
+}
