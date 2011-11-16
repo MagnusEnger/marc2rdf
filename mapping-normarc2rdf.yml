@@ -1,0 +1,476 @@
+--- 
+tag:
+  "001": 
+    predicate: http://www.w3.org/1999/02/22-rdf-syntax-ns#type
+    object:
+      regex: \d{1,}
+      prefix: http://rdf.deichman.no/resource/
+      datatype: uri
+    relation: 
+      class: http://purl.org/vocab/frbr/core#Manifestation
+      
+  "008": 
+    predicate: http://purl.org/dc/terms/language
+    object: 
+      regex: !ruby/regexp /[34,3]/
+      prefix: http://rdf.deichman.no/language/
+      datatype: uri
+    relation: 
+      class: http://lexvo.org/ontology#Language
+
+  "010": 
+    subfield: 
+      a: 
+        predicate: http://purl.org/ontology/bibo/lccn
+        object: 
+          regex: !ruby/regexp /[\.:,;\/\s]\s*$/
+          prefix: http://rdf.deichman.no/bibo/lccn/
+          datatype: literal
+
+  "019": 
+    subfield: 
+      a: 
+        predicate: http://purl.org/dc/terms/audience
+        object: 
+          prefix: http://rdf.deichman.no/audience/
+          regex: !ruby/regexp /[^\w\-ÆØÅæøå]/
+          datatype: uri
+      b: 
+        predicate: http://purl.org/dc/terms/format
+        object:
+          prefix: http://rdf.deichman.no/format/
+          regex: !ruby/regexp /[^\w\-ÆØÅæøå]/
+          split: !ruby/regexp /, */
+          datatype: uri
+      d: 
+        predicate: http://bibpode.no/terms/literaryFormat
+        object: 
+          prefix: http://rdf.deichman.no/literaryFormat/
+          regex: !ruby/regexp /[^\w\-ÆØÅæøå]/
+          datatype: uri
+
+  "020": 
+    subfield: 
+      a: 
+        predicate: http://purl.org/ontology/bibo/isbn10
+        object: 
+          regex: !ruby/regexp /[^\d]/
+          datatype: float
+
+  "022": 
+    subfield: 
+      a: 
+        predicate: http://purl.org/ontology/bibo/issn
+        object:
+          regex: !ruby/regexp /[^\d]/
+          datatype: float
+
+  "035": 
+    subfield: 
+      a: 
+        predicate: http://purl.org/ontology/bibo/oclcnum
+        object: 
+          regex: !ruby/regexp /^\(OcoLC\)/
+          datatype: literal
+
+  "041": 
+    subfield: 
+      a: 
+        predicate: http://purl.org/dc/terms/language
+        object: 
+          prefix: http://rdf.deichman.no/language/
+          regex: !ruby/regexp /[^\w\-ÆØÅæøå]/
+          split: !ruby/regexp /(\w{3})/
+          datatype: uri 
+        relation: 
+          class: http://lexvo.org/ontology#Language
+
+  "082": 
+    subfield: 
+      a: 
+        predicate: http://bibpode.no/terms/ddk
+        object: 
+          prefix: http://rdf.deichman.no/ddk/
+          regex: !ruby/regexp /[^\S]/
+          datatype: uri
+        relation: 
+          class: http://bibpode.no/terms/DDKCode
+
+  "090": 
+    subfield: 
+      ?
+        - b
+        - c
+        - d
+      : 
+        predicate: http://bibpode.no/terms/location
+        object: 
+          datatype: literal
+          lang: :no
+
+  "110": 
+    subfield: 
+      a: 
+        predicate: http://purl.org/dc/terms/creator
+        object: 
+          regex: !ruby/regexp /[^\w\-ÆØÅæøå]/
+          prefix: http://rdf.deichman.no/organization/
+          datatype: uri
+        relation: 
+          class: http://xmlns.com/foaf/0.1/Organization
+          subfield: 
+            a: 
+              predicate: http://xmlns.com/foaf/0.1/name
+              object: 
+                datatype: literal
+                lang: :no
+
+  "240": 
+    subfield: 
+      ?
+        - a
+        - b
+      : 
+        predicate: http://purl.org/dc/terms/alternative
+        object: 
+          regex: !ruby/regexp /[\.:,;\/\s]\s*$/
+          datatype: literal
+
+  "245": 
+    subfield: 
+      a: 
+        predicate: http://purl.org/dc/terms/title
+        object: 
+          regex: !ruby/regexp /[\.:,;\/\s]\s*$/
+          datatype: literal
+      b: 
+        predicate: http://rdvocab.info/Elements/variantTitleForTheWork
+        object: 
+          regex: !ruby/regexp /[\.:,;\/\s]\s*$/
+          datatype: literal
+      c: 
+        predicate: http://RDVocab.info/Elements/statementOfResponsibility
+        object: 
+          regex: !ruby/regexp /[\.:,;\/\s]\s*$/
+          datatype: literal
+      n: 
+        predicate: http://purl.org/ontology/bibo/number
+        object: 
+          regex: !ruby/regexp /[^\d]/
+          datatype: integer
+
+  "250": 
+    subfield: 
+      a: 
+        predicate: http://purl.org/ontology/bibo/edition
+        object: 
+          regex: !ruby/regexp /[^\d]/
+          datatype: integer
+
+  "260": 
+    subfield: 
+      a: 
+        predicate: http://purl.org/dc/terms/publicationPlace
+        object: 
+          regex: !ruby/regexp /[^\w\-ÆØÅæøå]/
+          prefix: http://rdf.deichman.no/publicationPlace/
+          datatype: uri
+        relation: 
+          class: "http://www.geonames.org/ontology#Feature"
+          subfield:
+            a:
+              predicate: "http://www.geonames.org/ontology#name"
+              object:
+                datatype: literal
+                lang: :no
+      b: 
+        predicate: http://purl.org/dc/terms/publisher
+        object: 
+          regex: !ruby/regexp /[^\w\-ÆØÅæøå]/
+          prefix: http://rdf.deichman.no/organization/
+          datatype: uri
+        relation: 
+          class: http://xmlns.com/foaf/0.1/Organization
+          subfield:
+            a:
+              predicate: "http://xmlns.com/foaf/0.1/name"
+              object:
+                datatype: literal
+                lang: :no
+      c: 
+        predicate: http://purl.org/dc/terms/issued
+        object: 
+          regex: !ruby/regexp /[^\d]/
+          datatype: integer
+          
+  "300": 
+    subfield: 
+      a: 
+        predicate: http://purl.org/ontology/bibo/pages
+        object: 
+          regex: !ruby/regexp /[^\d]/
+          datatype: integer
+      ?
+        - b
+        - c
+        - e
+      : 
+        predicate: http://bibpode.no/terms/physicalDescription
+        object: 
+          regex: !ruby/regexp /[\.:,;\/\s]\s*$/
+          datatype: literal
+          lang: :no
+
+  "(246|767)": 
+    subfield: 
+      ?
+        - a
+        - b
+        - c
+        - e
+        - t
+      : 
+        predicate: http://RDVocab.info/Elements/parallelTitleProper
+        object: 
+          regex: !ruby/regexp /[\.:,;\/\s]\s*$/
+          datatype: literal
+          lang: :no
+
+  "^5(?!71)": 
+    subfield: 
+      a: 
+        predicate: http://purl.org/dc/terms/description
+        object: 
+          regex: !ruby/regexp /[\.:,;\/\s]\s*$/
+          datatype: literal
+          lang: :no
+
+  "571": 
+    subfield: 
+      a: 
+        predicate: http://purl.org/ontology/bibo/identifier
+        object: 
+          regex: !ruby/regexp /[\.:,;\/\s]\s*$/
+          datatype: literal
+
+  "(100|400|700|790|796|800|896)": 
+    subfield: 
+      a:
+        predicate: "http://purl.org/dc/terms/creator" 
+        object: 
+          datatype: uri
+          prefix: "http://rdf.deichman.no/person/" 
+          regex: !ruby/regexp /[^\w\-ÆØÅæøå]/
+        relation: 
+          class: "http://xmlns.com/foaf/0.1/Person"
+          subfield:
+            a:
+              predicate: "http://xmlns.com/foaf/0.1/name"
+              object:
+                datatype: literal
+            b:
+              predicate: "http://purl.org/ontology/bibo/suffixName"
+              object:
+                datatype: literal                
+            c:
+              predicate: "http://xmlns.com/foaf/0.1/title"
+              object:
+                datatype: literal
+                lang: :no
+            d:
+              predicate: "http://bibpode.no/terms/lifespan"
+              object:
+                datatype: literal
+            j:
+              predicate: "http://www.foafrealm.org/xfoaf/0.1/nationality"
+              object:
+                datatype: uri
+                prefix: "http://rdf.deichman.no/nationality/"
+                regex: !ruby/regexp /[\.:,;\/\s]\s*$/
+            t:
+              predicate: "http://purl.org/dc/terms/title"
+              object:
+                datatype: literal
+                lang: :no
+      e:
+        conditions: 
+          reader:
+            regex: /innl.*/
+            predicate: http://bibpode.no/terms/reader
+            object: 
+              regex: !ruby/regexp /[^\w\-ÆØÅæøå]/
+              prefix: http://rdf.deichman.no/person/
+              datatype: uri
+          creator:
+            regex: /medforf.*/
+            predicate: http://purl.org/dc/terms/creator 
+            object: 
+              regex: !ruby/regexp /[^\w\-ÆØÅæøå]/
+              prefix: http://rdf.deichman.no/person/
+              datatype: uri
+          actor:
+            regex: /reg.*/
+            predicate: http://bibpode.no/terms/actor
+            object: 
+              regex: !ruby/regexp /[^\w\-ÆØÅæøå]/
+              prefix: http://rdf.deichman.no/person/
+              datatype: uri
+          translator:
+            regex: /over.*/
+            predicate: http://purl.org/ontology/bibo/translator
+            object: 
+              regex: !ruby/regexp /[^\w\-ÆØÅæøå]/
+              prefix: http://rdf.deichman.no/person/
+              datatype: uri
+       
+  "440": 
+    subfield: 
+      a: 
+        predicate: http://purl.org/dc/terms/isPartOf
+        object: 
+          regex: !ruby/regexp /[^\w\-ÆØÅæøå]/
+          prefix: http://rdf.deichman.no/resource/
+          datatype: uri
+        relation: 
+          class: http://purl.org/ontology/bibo/Series
+      v: 
+        predicate: http://purl.org/ontology/bibo/pages
+        object: 
+          regex: !ruby/regexp /[^\d]/
+          datatype: integer
+      x: 
+        predicate: http://purl.org/ontology/bibo/issn
+        object: 
+          datatype: literal
+
+  "600": 
+    subfield: 
+      ?
+        - a
+        - d
+        - j
+        - t
+      : 
+        predicate: http://purl.org/dc/terms/subject
+        object: 
+          regex: !ruby/regexp /[^\w\-ÆØÅæøå]/
+          prefix: http://rdf.deichman.no/subject/
+          datatype: uri
+        relation: 
+          class: http://www.w3.org/2004/02/skos/core#Concept
+          subfield: 
+            a: 
+              predicate: http://www.w3.org/2004/02/skos/core#prefLabel
+              object: 
+                datatype: literal
+                lang: :no
+
+  "(650|690|693|699)": 
+    subfield: 
+      ?
+        - a
+        - d
+        - j
+      : 
+        predicate: http://purl.org/dc/terms/subject
+        object:
+          regex: !ruby/regexp /[^\w\-ÆØÅæøå]/
+          split: !ruby/regexp /, */
+          prefix: http://rdf.deichman.no/subject/
+          datatype: uri
+        relation: 
+          class: http://www.w3.org/2004/02/skos/core#Concept
+          subfield:
+            a: 
+              predicate: http://www.w3.org/2004/02/skos/core#prefLabel
+              object: 
+                datatype: literal
+                lang: :no
+            x: 
+              predicate: http://purl.org/dc/terms/subject
+              object: 
+                regex: !ruby/regexp /[^\w\-ÆØÅæøå]/
+                prefix: http://rdf.deichman.no/classification/
+                datatype: uri
+              relation: 
+                class: http://bibpode.no/terms/DDKCode
+            1: 
+              predicate: http://rdf.deichman.no/classification
+              object: 
+                regex: !ruby/regexp /[^\w\-ÆØÅæøå]/
+                prefix: http://rdf.deichman.no/ddk/
+                datatype: uri
+              relation: 
+                class: http://bibpode.no/terms/DDKCode
+
+  "652": 
+    subfield: 
+      a: 
+        predicate: http://purl.org/ontology/mo/genre
+        object: 
+          regex: !ruby/regexp /[^\w\-ÆØÅæøå]/
+          prefix: http://rdf.deichman.no/mogenre/
+          datatype: uri
+        relation: 
+          class: http://purl.org/ontology/mo/Genre
+          subfield:
+            a: 
+              predicate: http://www.w3.org/2004/02/skos/core#prefLabel
+              object: 
+                datatype: literal
+                lang: :no
+
+  "655": 
+    subfield: 
+      a: 
+        predicate: http://purl.org/ontology/mo/genre
+        object: 
+          regex: !ruby/regexp /[^\w\-ÆØÅæøå]/
+          prefix: http://rdf.deichman.no/mogenre/
+          datatype: uri
+        relation: 
+          class: http://purl.org/ontology/mo/Genre
+          subfield:
+            a: 
+              predicate: http://www.w3.org/2004/02/skos/core#prefLabel
+              object: 
+                datatype: literal
+                lang: :no
+
+  "710": 
+    subfield: 
+      a: 
+        predicate: http://purl.org/dc/terms/creator
+        object: 
+          regex: !ruby/regexp /[^\w\-ÆØÅæøå]/
+          prefix: http://rdf.deichman.no/organization/
+          datatype: uri
+        relation: 
+          class: http://xmlns.com/foaf/0.1/Organization
+          subfield:
+            a:
+              predicate: "http://xmlns.com/foaf/0.1/name"
+              object:
+                datatype: literal
+                lang: :no
+
+
+  "760": 
+    subfield: 
+      a: 
+        predicate: http://purl.org/dc/terms/isPartOf
+        relation: 
+          class: http://purl.org/ontology/bibo/Series
+        object: 
+          regex: !ruby/regexp /[^\w\-ÆØÅæøå]/
+          prefix: http://rdf.deichman.no/resource/
+          datatype: uri
+
+  "730": 
+    subfield: 
+      a: 
+        predicate: http://purl.org/dc/terms/alternative
+        object: 
+          regex: !ruby/regexp /[\.:,;\/\s]\s*$/
+          datatype: literal
+ 
