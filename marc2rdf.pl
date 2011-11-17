@@ -40,7 +40,7 @@ my $count = 0;
 # Iterate through our MARC records and convert them
 while (my $record = $batch->next()) {
 
-  print "\n";
+  # DEBUG print "\n";
   
   # Construct the subject URI
   my $s = new RDF::Redland::URINode(
@@ -67,7 +67,7 @@ while (my $record = $batch->next()) {
 
     if ($field->is_control_field()) {
       
-      print $tag , " ", $fieldmap->{'predicate'}, "\n";
+      # DEBUG print $tag , " ", $fieldmap->{'predicate'}, "\n";
       _create_triple($s, $field->data(), $fieldmap);
       
     } else {
@@ -82,7 +82,7 @@ while (my $record = $batch->next()) {
           next;
         }
         my $fieldmap = $fieldmap->{'subfield'}->{$subfieldindicator};
-        print $tag, " ", $subfieldindicator, " ", $fieldmap->{'predicate'}, "\n";
+        # DEBUG print $tag, " ", $subfieldindicator, " ", $fieldmap->{'predicate'}, "\n";
         _create_triple($s, $subfieldvalue, $fieldmap);
       }
       
@@ -93,7 +93,7 @@ while (my $record = $batch->next()) {
   
 }
 
-print "$count records done\n\n";
+# DEBUG print "$count records done\n\n";
 
 # Serialize the model into the format we set initially
 my $base_uri = new RDF::Redland::URINode("http://example.org/");
@@ -107,7 +107,7 @@ sub _create_triple {
   
   # Construct the predicate URI
   my $p = new RDF::Redland::URINode($map->{'predicate'});
-  print "\tp: ", $p->as_string(), "\n";
+  # DEBUG print "\tp: ", $p->as_string(), "\n";
 
   # Construct the object
   # Get data based on a regexp
@@ -133,7 +133,7 @@ sub _create_triple {
     $data = new RDF::Redland::URINode($data);
   }
   my $o = new RDF::Redland::Node($data);
-  print "\to: ", $o->as_string(), "\n";
+  # DEBUG print "\to: ", $o->as_string(), "\n";
   # Construct the triple
   my $statement = new RDF::Redland::Statement($s, $p, $o);
   $model->add_statement($statement);
