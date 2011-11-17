@@ -1,0 +1,5 @@
+uri:
+    base: http://example.org
+    resource_path: /collections/
+    resource_prefix: id#
+    resource_type: http://purl.org/vocab/frbr/core#Manifestation

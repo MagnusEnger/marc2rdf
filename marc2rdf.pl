@@ -14,10 +14,12 @@ use Data::Dumper;
 
 # my $yaml = 'mapping-normarc2rdf.yml';
 my $yaml = 'mini.yml';
+my $conf = 'config.yml';
 my $marc = 'koha.mrc';
 
 # Load the MARC to RDF mapping
 my $maptags = LoadFile($yaml);
+my $config  = LoadFile($conf);
 
 # Set up some Redland stuff
 my $storage = new RDF::Redland::Storage("hashes", "test", "new='yes',hash-type='memory'");
@@ -27,6 +29,9 @@ die "Failed to create RDF::Redland::Model for storage\n" unless $model;
 # Possible formats for the serializer: rdfxml, ntriples, turtle (more?)
 my $serializer = new RDF::Redland::Serializer($ARGV[0]);
 die "Failed to find serializer\n" if !$serializer;
+# Create nodes for the rdf:type predicate
+my $p_type = new RDF::Redland::URINode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type');
+my $o_type = new RDF::Redland::URINode($config->{'uri'}->{'resource_type'});
 
 # Get the MARC records
 my $batch = MARC::File::USMARC->in($marc);
@@ -38,8 +43,16 @@ while (my $record = $batch->next()) {
   print "\n";
   
   # Construct the subject URI
-  # TODO Pull this from config
-  my $s = new RDF::Redland::URINode('http://example.org' . '/collections/' . 'id_' . $record->subfield('999',"c"));
+  my $s = new RDF::Redland::URINode(
+    $config->{'uri'}->{'base'} . 
+    $config->{'uri'}->{'resource_path'} . 
+    $config->{'uri'}->{'resource_prefix'} . 
+    $record->subfield('999',"c")
+  );
+  
+  # Set the rdf:type
+  my $statement = new RDF::Redland::Statement($s, $p_type, $o_type);
+  $model->add_statement($statement);
   
   # Iterate through all the fields in the record
   my @fields = $record->fields();
