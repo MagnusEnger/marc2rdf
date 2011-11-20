@@ -9,6 +9,14 @@ tag:
       datatype: uri
     relation: 
       class: http://lexvo.org/ontology#Language
+
+  "020": 
+    subfield: 
+      a: 
+        predicate: http://purl.org/ontology/bibo/isbn13
+        object: 
+          massage: isbn
+          datatype: float
       
   "245": 
     subfield: 

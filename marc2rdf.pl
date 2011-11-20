@@ -114,6 +114,7 @@ sub _create_triple {
   # Massage data
   if ($map->{'object'}->{'massage'}) {
     given($map->{'object'}->{'massage'}) {
+      when ("isbn") { $data = _isbn($data); }
       when ("remove_trailing_punctuation") { $data =~ s/[\.:,;\/\s]\s*$//; }
     }
   }
@@ -138,5 +139,22 @@ sub _create_triple {
   my $statement = new RDF::Redland::Statement($s, $p, $o);
   $model->add_statement($statement);
   $statement = undef;
+
+}
+
+sub _isbn {
+
+  use Business::ISBN;
+  my $i = shift;
+  # Create an ISBN object, this removes any cruft in the data
+  my $isbn = Business::ISBN->new( $i );
+  if ($isbn) {
+    if (!$isbn->is_valid()) { return undef; }
+    # Make sure it's isbn13
+    my $isbn13 = $isbn->as_isbn13();
+    return $isbn13->isbn();
+  } else {
+    return undef;
+  }
 
 }
