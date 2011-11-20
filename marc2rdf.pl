@@ -115,6 +115,7 @@ sub _create_triple {
   if ($map->{'object'}->{'massage'}) {
     given($map->{'object'}->{'massage'}) {
       when ("isbn") { $data = _isbn($data); }
+      when ("issn") { $data = _issn($data); }
       when ("remove_trailing_punctuation") { $data =~ s/[\.:,;\/\s]\s*$//; }
     }
   }
@@ -153,6 +154,21 @@ sub _isbn {
     # Make sure it's isbn13
     my $isbn13 = $isbn->as_isbn13();
     return $isbn13->isbn();
+  } else {
+    return undef;
+  }
+
+}
+
+sub _issn {
+
+  use Business::ISSN;
+  my $i = shift;
+  # Create an ISSN object, this removes any cruft in the data
+  my $issn = Business::ISSN->new( $i );
+  if ($issn) {
+    if (!$issn->is_valid()) { return undef; }
+    return $issn->as_string;
   } else {
     return undef;
   }

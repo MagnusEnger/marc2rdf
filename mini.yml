@@ -16,7 +16,15 @@ tag:
         predicate: http://purl.org/ontology/bibo/isbn13
         object: 
           massage: isbn
-          datatype: float
+          datatype: string
+          
+  "022": 
+    subfield: 
+      a: 
+        predicate: http://purl.org/ontology/bibo/issn
+        object:
+          massage: issn
+          datatype: string
       
   "245": 
     subfield: 
