@@ -46,3 +46,11 @@ tag:
         object: 
           massage: remove_trailing_punctuation
           datatype: literal
+          
+  "250": 
+    subfield: 
+      a: 
+        predicate: http://purl.org/ontology/bibo/edition
+        object: 
+          massage: leading_integer
+          datatype: integer

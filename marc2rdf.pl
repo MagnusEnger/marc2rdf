@@ -116,6 +116,7 @@ sub _create_triple {
     given($map->{'object'}->{'massage'}) {
       when ("isbn") { $data = _isbn($data); }
       when ("issn") { $data = _issn($data); }
+      when ("leading_integer") { $data =~ m/^(\d).*/; $data = $1; } 
       when ("remove_trailing_punctuation") { $data =~ s/[\.:,;\/\s]\s*$//; }
     }
   }
