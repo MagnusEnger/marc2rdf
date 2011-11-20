@@ -10,6 +10,14 @@ tag:
     relation: 
       class: http://lexvo.org/ontology#Language
 
+  "010": 
+    subfield: 
+      a: 
+        predicate: http://purl.org/ontology/bibo/lccn
+        object: 
+          massage: remove_trailing_punctuation
+          datatype: literal
+
   "020": 
     subfield: 
       a: 
