@@ -15,10 +15,10 @@ tag:
       a: 
         predicate: http://purl.org/dc/terms/title
         object: 
-          regex: /[\.:,;\/\s]\s*$/
+          massage: remove_trailing_punctuation
           datatype: literal
       b: 
         predicate: http://rdvocab.info/Elements/variantTitleForTheWork
         object: 
-          regex: /[\.:,;\/\s]\s*$/
+          massage: remove_trailing_punctuation
           datatype: literal

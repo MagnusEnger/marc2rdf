@@ -7,6 +7,7 @@ use MARC::Record;
 use MARC::Field;
 use RDF::Redland;
 use YAML::Syck;
+use feature "switch";
 use strict;
 
 # DEBGUG
@@ -110,12 +111,11 @@ sub _create_triple {
   # DEBUG print "\tp: ", $p->as_string(), "\n";
 
   # Construct the object
-  # Get data based on a regexp
-  if ($map->{'object'}->{'regex'}) {
-    my $regex = $map->{'object'}->{'regex'};
-    # print "regex: $regex\n";
-    # FIXME $data =~ m/($regex)/i;
-    $data = $data;
+  # Massage data
+  if ($map->{'object'}->{'massage'}) {
+    given($map->{'object'}->{'massage'}) {
+      when ("remove_trailing_punctuation") { $data =~ s/[\.:,;\/\s]\s*$//; }
+    }
   }
   # Get data based on a substring
   if ($map->{'object'}->{'substr_offset'} && $map->{'object'}->{'substr_length'}) {
