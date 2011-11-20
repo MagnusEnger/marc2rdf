@@ -14,7 +14,7 @@ use strict;
 use Data::Dumper;
 
 # my $yaml = 'mapping-normarc2rdf.yml';
-my $yaml = 'mini.yml';
+my $yaml = 'normarc-mapping.yml';
 my $conf = 'config.yml';
 my $marc = 'koha.mrc';
 
